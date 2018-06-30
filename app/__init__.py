@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
 # Import SQLAlchemy
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -19,5 +19,5 @@ def not_found(error):
     return render_template('404.html'), 404
     
 @app.route("/")
-def home(): 
+def home():
     return render_template('index.html') 
