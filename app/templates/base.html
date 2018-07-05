@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        {% block head %}
         <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_orange-indigo.min.css" />
         <link rel="stylesheet" href={{ url_for('static', filename='css/main.css') }}/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        {% endblock %}
     </head>
     <body>
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -13,7 +15,7 @@
                     <div class="mdl-layout-spacer"></div>
                     <nav class="mdl-navigation">
                         <div style="display: {{none if not loggedin}}">
-                            <a class="mdl-navigation__link" href="">Sign-out</a>
+                            <a class="mdl-navigation__link" href={{url_for('auth.logout')}}>Sign-out</a>
                         </div>
                     </nav>
                 </div>
@@ -24,5 +26,6 @@
                 </div>
             </main>
         </div>
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     </body>
 </html>

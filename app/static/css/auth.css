@@ -1,0 +1,17 @@
+.mdl-layout {
+	align-items: center;
+    justify-content: center;
+}
+
+.mdl-layout__content {
+	padding: 24px;
+	flex: none;
+}
+
+.mdl-textfield {
+    width: 100%;
+}
+
+.auth-card {
+    width: 100%;
+}
