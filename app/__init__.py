@@ -15,6 +15,7 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 
 from app.auth.controllers import auth
+from app.budget.models import Budget, Expense
 from app.auth.models import User
 
 app.register_blueprint(auth)
