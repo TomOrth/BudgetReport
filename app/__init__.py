@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_login import current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,10 +15,12 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 
 from app.auth.controllers import auth
+from app.budget.controllers import budget
 from app.budget.models import Budget, Expense
 from app.auth.models import User
 
 app.register_blueprint(auth)
+app.register_blueprint(budget)
 
 # Sample HTTP error handling
 @app.errorhandler(404)
@@ -32,6 +34,10 @@ def home():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(id=user_id).first()
+
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect(url_for('auth.signup'))
 
 db.create_all()
 

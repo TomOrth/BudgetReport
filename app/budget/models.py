@@ -9,7 +9,7 @@ class Budget(Base):
 
     name = db.Column(db.String(128), nullable=False)
 
-    expenses = db.relationship('Expense', back_populates='expense')
+    expenses = db.relationship('Expense')
 
     def __init__(self, user_id, name):
         self.user_id = user_id

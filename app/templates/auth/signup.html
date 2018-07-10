@@ -14,30 +14,9 @@
 
 {% extends 'base.html' %}
 {% block container %}
-{% block head %}
-{{ super() }}
+{% endif %}
 <link rel="stylesheet" href={{ url_for('static', filename='css/auth.css') }}/>
-{% endblock %}
-{% with errors = get_flashed_messages(category_filter=["error"]) %}
-{% if errors %}
-<div>
-{% for error in errors %}
-{{ error }}<br>
-{% endfor %}
-</div>
-{% endif %}
-{% endwith %}
-
-{% if form.errors %}
-<div>
-{% for field, error in form.errors.items() %}
-{% for e in error %}
-{{ e }}<br>
-{% endfor %}
-{% endfor %}
-</div>
-{% endif %}
-<div class="mdl-card auth-card mdl-shadow--6dp">
+<div class="mdl-card mdl-shadow--6dp">
     <div class="mdl-card__title mdl-color--primary mdl-color-text--white">
         <h2 class="mdl-card__title-text">Sign-Up</h2>
     </div>

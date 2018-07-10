@@ -5,3 +5,7 @@
 .mdl-layout {
     height: auto;
 }
+
+.mdl-card {
+    width: 100%;
+}

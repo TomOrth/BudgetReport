@@ -12,7 +12,7 @@ class User(Base, UserMixin):
                                             unique=True)
     password = db.Column(db.Binary(128), nullable=False)
 
-    budgets = db.relationship('Budget', back_populates='budget')
+    budgets = db.relationship('Budget')
 
     # New instance instantiation procedure
     def __init__(self, email, password):
