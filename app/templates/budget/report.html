@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
-{% block containter %}
-
+{% block container %}
 <link rel="stylesheet" href={{ url_for('static', filename='css/report.css') }}/>
 <div class="mdl-cell mdl-cell--12-col mdl-cell--6-col-tablet">
-    
+    <a href="#" onclick="newBudgetDialog()">dialog</a>
 </div>
 
+<dialog class="mdl-dialog" id="newBudget">
+    <h3 class="mdl-dialog__title">New Budget</h3>
+    <div class="mdl-dialog__content">
+        <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" type="text" id="budgetName">
+            <label class="mdl-textfield__label" for="budget">Name</label>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" onclick="createBudget()">Create</button>
+        <button type="button" class="mdl-button" onclick="closeNewBudgetDialog()">Close</button>
+      </div>
+</dialog>
+<script src={{ url_for('static', filename='js/report.js') }}></script>
 {% endblock %}

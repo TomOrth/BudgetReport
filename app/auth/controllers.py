@@ -20,10 +20,10 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
-            return redirect(url_for('home'))
+            return redirect(url_for('budget.report'))
         else:
             flash('User already exists')
-            return redirect(url_for('auth.signin'))
+            return redirect(url_for('auth.signup'))
     return render_template('auth/signup.html', form=signup_form, loggedin=current_user.is_authenticated)
 
 @auth.route('/signin', methods=['GET', 'POST'])
@@ -37,6 +37,7 @@ def signin():
             user = User.query.filter_by(email=signin_form.email.data).first()
             if user.check_password(signin_form.password.data): 
                 login_user(user)
+                return redirect(url_for('budget.report'))
             else:
                 flash('Incorrect Password')
                 return redirect(url_for('auth.signin'))
