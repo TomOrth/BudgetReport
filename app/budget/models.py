@@ -9,11 +9,14 @@ class Budget(Base):
 
     name = db.Column(db.String(128), nullable=False)
 
+    amount = db.Column(db.Float)
+
     expenses = db.relationship('Expense')
 
-    def __init__(self, user_id, name):
+    def __init__(self, user_id, name, amount):
         self.user_id = user_id
         self.name = name
+        self.amount = amount
 
 class Expense(Base):
 

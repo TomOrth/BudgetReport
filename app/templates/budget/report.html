@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
 {% block container %}
-<link rel="stylesheet" href={{ url_for('static', filename='css/report.css') }}/>
+{% block head %} <link rel="stylesheet" href={{ url_for('static', filename='css/report.css') }}/> {% endblock %}
 <div class="mdl-cell mdl-cell--12-col mdl-cell--6-col-tablet">
-    <a href="#" onclick="newBudgetDialog()">dialog</a>
+    <a id="newBudgetButton" href="#">dialog</a>
 </div>
 
 <dialog class="mdl-dialog" id="newBudget">
     <h3 class="mdl-dialog__title">New Budget</h3>
     <div class="mdl-dialog__content">
-        <div class="mdl-textfield mdl-js-textfield">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input" type="text" id="budgetName">
-            <label class="mdl-textfield__label" for="budget">Name</label>
+            <label class="mdl-textfield__label" for="budgetName">Name</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="number" id="newAmount">
+            <label class="mdl-textfield__label" for="newAmount">Amount</label>
         </div>
     </div>
     <div class="mdl-dialog__actions">
-        <button type="button" class="mdl-button" onclick="createBudget()">Create</button>
-        <button type="button" class="mdl-button" onclick="closeNewBudgetDialog()">Close</button>
+        <button id="newBudgetCreate" type="button" class="mdl-button">Create</button>
+        <button id="newBudgetClose" type="button" class="mdl-button">Close</button>
       </div>
 </dialog>
-<script src={{ url_for('static', filename='js/report.js') }}></script>
+    {% block scripts %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src={{ url_for('static', filename='js/dialog-polyfill.js')}}></script>
+        <script src={{ url_for('static', filename='js/report.js') }}></script>
+    {% endblock %}
 {% endblock %}

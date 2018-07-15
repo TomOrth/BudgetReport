@@ -1,13 +1,28 @@
-var dialog = document.getElementById('newBudget');
-var showDialogButton = document.querySelector('#show-dialog');
-if (! dialog.showModal) {
-  dialogPolyfill.registerDialog(dialog);
-}
+$(document).ready(function(){
+    var dialog = $('#newBudget').get(0);
+    dialogPolyfill.registerDialog(dialog);
 
-function newBudgetDialog() {
-    dialog.showModal()
-}
+    $('#newBudgetButton').click(function(){
+        dialog.showModal();
+    });
 
-function closeNewBudgetDialog(id) {
-    dialog.close();
-}
+    $('#newBudgetClose').click(function(){
+        dialog.close();
+    });
+
+    $('#newBudgetCreate').click(function(evt){
+        evt.stopImmediatePropagation();
+        var bName = $('#budgetName').val(),
+            bAmount = $('#newAmount').val();
+        var payload = {'name': bName, 'amount': bAmount};
+        $.ajax({
+                type : 'POST',
+                url : '/budget/new',
+                data: JSON.stringify(payload, null, '\t'),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(result) {
+                    dialog.close();
+                }
+            });
+    });
+});
