@@ -20,13 +20,9 @@ def new():
         new_budget = Budget(user_id=current_user.id, name=payload['name'], amount=payload['amount'])
         current_user.budgets.append(new_budget)
         db.session.add(current_user)
+        db.session.add(new_budget)
         db.session.commit()
         return 'Successful', 200
     return 'Unsupported request type', 405
-
-@budget.route('/all')
-def all():
-    budgets = current_user.budgets
-    current_app.logger.info(budgets)
     
 
