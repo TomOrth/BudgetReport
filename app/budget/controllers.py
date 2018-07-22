@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, render_template, request, current_app, redirect, url_for
+from flask import Blueprint, render_template, request, current_app, redirect, url_for, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 
 from app import db
@@ -24,5 +24,10 @@ def new():
         db.session.commit()
         return 'Successful', 200
     return 'Unsupported request type', 405
+
+@budget.route('/budgets')
+def all():
+    budgets = [b.as_dict() for b in current_user.budgets]
+    return jsonify(budgets)
     
 

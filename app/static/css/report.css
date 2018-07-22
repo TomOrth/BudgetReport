@@ -1,3 +1,34 @@
 .mdl-cell {
     padding: 16px;
 }
+
+.mdl-card__supporting-text {
+    width: 100%;
+    height: auto;
+}
+
+h2 {
+    padding-right: 16px;
+}
+
+i, label {
+    color: white;
+}
+
+#budgets {
+    width: 100%;
+    min-height: 50vh;
+}
+
+#budgetWrapper {
+    width: auto;
+    margin: -20px 0;
+}
+
+.content-title h2 a {
+    margin-left: 8px;
+}
+
+option {
+    color: black;
+}

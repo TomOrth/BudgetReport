@@ -9,3 +9,8 @@ class Base(db.Model):
     date_created  = db.Column(db.DateTime,  default=db.func.current_timestamp())
     date_modified = db.Column(db.DateTime,  default=db.func.current_timestamp(),
                                            onupdate=db.func.current_timestamp())
+
+    def as_dict(self):
+        return dict((c.name,
+                     getattr(self, c.name))
+                     for c in self.__table__.columns)
