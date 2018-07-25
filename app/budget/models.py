@@ -28,6 +28,8 @@ class Expense(Base):
 
     budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'))
 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
     def __init__(self, description, amount, budget_id):
         self.description = description
         self.amount = amount

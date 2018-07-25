@@ -14,6 +14,8 @@ class User(Base, UserMixin):
 
     budgets = db.relationship('Budget')
 
+    expenses = db.relationship('Expense')
+
     # New instance instantiation procedure
     def __init__(self, email, password):
 
