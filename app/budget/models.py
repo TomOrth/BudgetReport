@@ -17,20 +17,3 @@ class Budget(Base):
         self.user_id = user_id
         self.name = name
         self.amount = amount
-
-class Expense(Base):
-
-    __tablename__ = 'expense'
-
-    description = db.Column(db.String(128), nullable=False)
-
-    amount = db.Column(db.Integer)
-
-    budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'))
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __init__(self, description, amount, budget_id):
-        self.description = description
-        self.amount = amount
-        self.budget_id = budget_id

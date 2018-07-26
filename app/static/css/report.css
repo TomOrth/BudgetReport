@@ -29,6 +29,10 @@ i, label {
     margin-left: 8px;
 }
 
+#budgetList {
+    margin-right: 50px;
+}
+
 option {
     color: black;
 }

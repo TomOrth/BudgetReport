@@ -13,14 +13,18 @@ login_manager.init_app(app)
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
+db.metadata.clear()
 
 from app.auth.controllers import auth
 from app.budget.controllers import budget
-from app.budget.models import Budget, Expense
+from app.expense.controllers import expense
+from app.budget.models import Budget
+from app.expense.models import Expense
 from app.auth.models import User
 
 app.register_blueprint(auth)
 app.register_blueprint(budget)
+app.register_blueprint(expense)
 
 # Sample HTTP error handling
 @app.errorhandler(404)

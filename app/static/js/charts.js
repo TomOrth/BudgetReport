@@ -1,4 +1,4 @@
-function budgetChart(data) {
+function barChart(id, data) {
     var xValue = [],
         yValue = [];
     
@@ -39,6 +39,6 @@ function budgetChart(data) {
         }
       };
       
-      Plotly.newPlot('budgets', data, layout, {displayModeBar: false});
+      Plotly.newPlot(id, data, layout, {displayModeBar: false});
 }
 

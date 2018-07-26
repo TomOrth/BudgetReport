@@ -22,7 +22,8 @@ def new():
         db.session.add(current_user)
         db.session.add(new_budget)
         db.session.commit()
-        return 'Successful', 200
+        current_app.logger.info(new_budget.id)
+        return jsonify(new_budget.as_dict()), 200
     return 'Unsupported request type', 405
 
 @budget.route('/budgets')
