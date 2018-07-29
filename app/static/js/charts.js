@@ -3,7 +3,7 @@ function barChart(id, data, nameKey) {
         yValue = [];
     
     $.each(data, function(index, value){
-        xValue.push(value.amount)
+        xValue.push(`$${value.amount}`)
         yValue.push(value[nameKey]);
     });
     console.log(id);
