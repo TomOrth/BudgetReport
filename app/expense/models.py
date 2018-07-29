@@ -6,7 +6,7 @@ class Expense(Base):
 
     description = db.Column(db.String(128), nullable=False)
 
-    amount = db.Column(db.Integer)
+    amount = db.Column(db.Float)
 
     budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'))
 

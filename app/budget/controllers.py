@@ -17,13 +17,16 @@ def report():
 def new():
     if request.method == 'POST':
         payload = request.json
-        new_budget = Budget(user_id=current_user.id, name=payload['name'], amount=payload['amount'])
-        current_user.budgets.append(new_budget)
-        db.session.add(current_user)
-        db.session.add(new_budget)
-        db.session.commit()
-        current_app.logger.info(new_budget.id)
-        return jsonify(new_budget.as_dict()), 200
+        budget_exists = Budget.query.filter_by(name=payload['name']).scalar()
+        if budget_exists is None:
+            new_budget = Budget(user_id=current_user.id, name=payload['name'], amount=float(payload['amount']))
+            current_user.budgets.append(new_budget)
+            db.session.add(current_user)
+            db.session.add(new_budget)
+            db.session.commit()
+            current_app.logger.info(new_budget.id)
+            return jsonify(new_budget.as_dict()), 200
+        return 'Budget already exists', 500
     return 'Unsupported request type', 405
 
 @budget.route('/budgets')

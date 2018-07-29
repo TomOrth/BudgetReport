@@ -1,10 +1,10 @@
-function barChart(id, data) {
+function barChart(id, data, nameKey) {
     var xValue = [],
         yValue = [];
     
     $.each(data, function(index, value){
         xValue.push(value.amount)
-        yValue.push(value.name);
+        yValue.push(value[nameKey]);
     });
 
     var trace1 = {

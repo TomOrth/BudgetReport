@@ -15,7 +15,7 @@ i, label {
     color: white;
 }
 
-#budgets {
+#budgets, #expenses{
     width: 100%;
     min-height: 50vh;
 }

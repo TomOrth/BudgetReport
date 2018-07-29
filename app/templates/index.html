@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block container %}
-{% block head %}<link rel="stylesheet" href={{ url_for('static', filename='css/home.css') }}/>{% endblock %}
+<link rel="stylesheet" href={{ url_for('static', filename='css/home.css') }}/>
 <div class="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet center-div">
     <img class="center-img" src={{ url_for('static', filename='images/icon.png') }} alt="My portrait">
 </div>

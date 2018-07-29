@@ -1,17 +1,15 @@
 {% extends 'base.html' %}
 {% block container %}
-{% block head %} <link rel="stylesheet" href={{ url_for('static', filename='css/report.css') }}/> {% endblock %}
+<link rel="stylesheet" href={{ url_for('static', filename='css/report.css') }}/>
 <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
     {% include 'budget/partials/budget_list_chart.html' %}
 </div>
 <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-tablet">
     {% include 'budget/partials/budget_expenses_chart.html' %}
 </div>
-    {% block scripts %}
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src={{ url_for('static', filename='js/dialog-polyfill.js')}}></script>
-        <script src={{ url_for('static', filename='js/charts.js') }}></script>
-        <script src={{ url_for('static', filename='js/report.js') }}></script>
-    {% endblock %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src={{ url_for('static', filename='js/dialog-polyfill.js')}}></script>
+<script src={{ url_for('static', filename='js/charts.js') }}></script>
+<script src={{ url_for('static', filename='js/report.js') }}></script>
 {% endblock %}
