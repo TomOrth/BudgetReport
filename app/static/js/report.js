@@ -121,6 +121,9 @@ $(document).ready(function(){
                     barChart('budgets', budgets, 'name')
                     budgetClick();
                     expenseClick();
+                },
+                error: function(data) {
+                    alert(data.responseText);
                 }
             });
             evt.stopPropagation();

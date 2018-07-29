@@ -17,6 +17,8 @@ def new():
         new_expense = Expense(budget_id=payload['budget_id'], user_id=current_user.id, description=payload['name'], amount=float(payload['amount']))
         existing_expense = Expense.query.filter_by(description=new_expense.description, budget_id=new_expense.budget_id).scalar()
         budget = Budget.query.filter_by(id=payload['budget_id']).first()
+        if budget.amount < new_expense.amount:
+            return 'Cannot add expense, your budget will go to 0!', 500
         budget.amount -= new_expense.amount
         if existing_expense is None:
             current_user.expenses.append(new_expense)
