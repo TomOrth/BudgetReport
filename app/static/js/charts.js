@@ -6,7 +6,8 @@ function barChart(id, data, nameKey) {
         xValue.push(value.amount)
         yValue.push(value[nameKey]);
     });
-
+    console.log(id);
+    console.log(xValue);
     var trace1 = {
         x: xValue,
         y: yValue,

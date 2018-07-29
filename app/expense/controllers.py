@@ -13,18 +13,26 @@ expense = Blueprint('expense', __name__, url_prefix='/expense')
 def new():
     if request.method == 'POST':
         payload = request.json
+        expense = None
         new_expense = Expense(budget_id=payload['budget_id'], user_id=current_user.id, description=payload['name'], amount=float(payload['amount']))
+        existing_expense = Expense.query.filter_by(description=new_expense.description, budget_id=new_expense.budget_id).scalar()
         budget = Budget.query.filter_by(id=payload['budget_id']).first()
         budget.amount -= new_expense.amount
-        current_user.expenses.append(new_expense)
+        if existing_expense is None:
+            current_user.expenses.append(new_expense)
+            expense = new_expense
+        else:
+            old_expense = Expense.query.filter_by(description=new_expense.description, budget_id=new_expense.budget_id).first()
+            old_expense.amount += new_expense.amount
+            expense = old_expense
         db.session.add(current_user)
-        db.session.add(new_expense)
+        db.session.add(expense)
         db.session.add(budget)
         db.session.commit()
         return jsonify(new_expense.as_dict()), 200
     return 'Unsupported request type', 405
 
-@expense.route('/expenses')
+@expense.route('/all')
 def all():
     expense_map = {}
     for e in current_user.expenses:
@@ -34,3 +42,16 @@ def all():
             expense_map[e.budget_id] = []
             expense_map[e.budget_id].append(e.as_dict())
     return jsonify(expense_map)
+
+@expense.route('/delete', methods=['POST'])
+def delete():
+    if request.method == 'POST':
+        payload = request.json
+        expense = Expense.query.filter_by(description=payload['name']).first()
+        budget = Budget.query.filter_by(id=expense.budget_id).first()
+        budget_id = expense.budget_id
+        budget.amount += expense.amount
+        db.session.delete(expense)
+        db.session.commit()
+        return jsonify(budget_id), 200
+    return 'Unsupported request type', 405

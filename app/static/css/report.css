@@ -36,3 +36,9 @@ i, label {
 option {
     color: black;
 }
+.fab {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 3;
+}
