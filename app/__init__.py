@@ -13,7 +13,6 @@ login_manager.init_app(app)
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
-db.metadata.clear()
 
 from app.auth.controllers import auth
 from app.budget.controllers import budget
