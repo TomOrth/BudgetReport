@@ -1,5 +1,5 @@
 # BudgetReport
-[![image](https://travis-ci.org/TomOrth/BudgetReport.svg?branch=master)](https://travis-ci.org/TomOrth/BudgetReport)
+[![image](https://travis-ci.org/TomOrth/BudgetReport.svg?branch=master)](https://travis-ci.org/TomOrth/BudgetReport) <br />
 Flask app to manage your budgets
 
 ## Running the program
@@ -9,7 +9,7 @@ Flask app to manage your budgets
 3. Install `docker` and `docker-compose`
 4. Run the following command:
 ```bash
-docker-compose run app -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value>
+docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> app
 ```
 and replace <value> with the appropriate value you got from AWS
 
@@ -17,7 +17,7 @@ and replace <value> with the appropriate value you got from AWS
 
 1. Follow steps 1-3 from the above section but run this command instead:
 ```bash
-docker-compose run test -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value>
+docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> test
 ```
 
 ## Built With
