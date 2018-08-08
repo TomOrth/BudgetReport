@@ -10,3 +10,8 @@ services:
       - "5000:5000"
     volumes:
       - .:/var/www/budgetreport
+  test:
+    build: .
+    command: python -m unittest discover -v
+    volumes:
+      - .:/var/www/budgetreport

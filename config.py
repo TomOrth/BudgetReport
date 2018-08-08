@@ -13,4 +13,6 @@ CSRF_SESSION_KEY = 'somethingsecret'
 
 SQLALCHEMY_DATABASE_URI = 'postgres://{}:{}@{}/budgetreport'.format(os.environ['RDS_USER'], os.environ['RDS_PASSWRD'], os.environ['RDS_HOST'])
 
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 SECRET_KEY = 'secret'

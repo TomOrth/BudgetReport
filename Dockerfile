@@ -1,7 +1,6 @@
-FROM ubuntu:latest
-MAINTAINER Thomas Orth "torth212@gmail.com"
-RUN apt-get update -y
-RUN apt-get install -y python-pip python-dev build-essential
+FROM python:3.6.3
+LABEL maintainer="torth212@gmail.com"
+
 RUN mkdir -p /var/www/budgetreport
 WORKDIR /var/www/budgetreport
 ADD requirements.txt /var/www/budgetreport
