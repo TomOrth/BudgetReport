@@ -32,6 +32,8 @@ def not_found(error):
     
 @app.route("/")
 def home():
+    if current_user.is_authenticated: 
+        return redirect(url_for('budget.report'))
     return render_template('index.html', loggedin=current_user.is_authenticated)
 
 @login_manager.user_loader
