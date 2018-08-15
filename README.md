@@ -17,7 +17,7 @@ and replace <value> with the appropriate value you got from AWS
 
 1. Follow steps 1-3 from the above section but run this command instead:
 ```bash
-docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> --service-ports test
+docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> test
 ```
 
 ## Built With
