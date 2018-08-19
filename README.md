@@ -4,20 +4,19 @@ Flask app to manage your budgets
 
 ## Running the program
 
-1. Sign-up for AWS and create a postgres-based instace of the Relational Database Service
-2. Take note of the database username, password, and endpoint URL
+1. Sign-up for AWS and create a postgres-based instace of the Relational Database Service (RDS)
+2. Create the environment variables `RDS_USER`, `RDS_PASSWRD`, and `RDS_HOST` with corresponding values from the RDS dashboard
 3. Install `docker` and `docker-compose`
 4. Run the following command:
 ```bash
-docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> --service-ports app
+sudo -E docker-compose -f docker-compose.yml up
 ```
-and replace <value> with the appropriate value you got from AWS
 
 ## Running tests
 
 1. Follow steps 1-3 from the above section but run this command instead:
 ```bash
-docker-compose run -e RDS_USER=<value> -e RDS_PASSWRD=<value> -e RDS_HOST=<value> test
+sudo -E docker-compose -f docker-compose.test.yml up
 ```
 
 ## Built With
