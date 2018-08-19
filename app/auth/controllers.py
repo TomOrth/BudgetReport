@@ -24,7 +24,7 @@ def signup():
         else:
             flash('User already exists')
             return redirect(url_for('auth.signup'))
-    return render_template('auth/signup.html', form=signup_form, loggedin=current_user.is_authenticated)
+    return render_template('auth/signup.html', form=signup_form, loggedin=current_user.is_authenticated, title='Sign-Up')
 
 @auth.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -44,7 +44,7 @@ def signin():
         else:
             flash('No user with the specified email does not exist')
             return redirect(url_for('auth.signin'))
-    return render_template('auth/signin.html', form=signin_form, loggedin=current_user.is_authenticated)
+    return render_template('auth/signin.html', form=signin_form, loggedin=current_user.is_authenticated, title='Sign-In')
 @auth.route('/logout')
 @login_required
 def logout():
