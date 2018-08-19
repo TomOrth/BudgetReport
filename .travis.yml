@@ -2,4 +2,4 @@ sudo: required
 language: python
 services: docker
 cache: pip
-script: docker-compose run -e RDS_USER=$RDS_USER -e RDS_PASSWRD=$RDS_PASSWRD -e RDS_HOST=$RDS_HOST test
+script: sudo -E docker-compose -f docker-compose.test.yml up
