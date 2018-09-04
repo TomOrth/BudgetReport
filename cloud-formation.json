@@ -1,0 +1,625 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "AWS CloudFormation Template for Budget Report: Create a highly available web server with an Amazon RDS database instance for the backend data store. Based on \"AWS CloudFormation Sample Template LAMP_Multi_AZ\"",
+
+  "Parameters": {
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "VpcId of your existing Virtual Private Cloud (VPC)",
+      "ConstraintDescription": "must be the VPC Id of an existing Virtual Private Cloud."
+    },
+
+    "Subnets": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "The list of SubnetIds in your Virtual Private Cloud (VPC)",
+      "ConstraintDescription": "must be a list of at least two existing subnets associated with at least two different availability zones. They should be residing in the selected Virtual Private Cloud."
+    },
+
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
+    },
+
+    "EC2OS": {
+      "Description": "The EC2 operating system",
+      "Type": "String",
+      "Default": "AmazonLinux2",
+      "AllowedValues": ["AmazonLinux2", "AmazonLinux"],
+      "ConstraintDescription": "must select a valid OS."
+    },
+
+    "EC2Monitoring": {
+      "Default": "false",
+      "Description": "Enable detailed monitoring. Not included in Free Tier.",
+      "Type": "String",
+      "AllowedValues": ["true", "false"],
+      "ConstraintDescription": "must be either true or false."
+    },
+
+    "RepositoryURL": {
+      "Description": "Git URL where code is located",
+      "Type": "String",
+      "Default": "https://github.com/TomOrth/BudgetReport.git",
+      "ConstraintDescription": "must provide a valid git URL."
+    },
+
+    "DBName": {
+      "Default": "budgetreport",
+      "Description": "PostgreSQL database name",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "63",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
+    },
+
+    "DBUser": {
+      "NoEcho": "true",
+      "Description": "Username for PostgreSQL database access",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "16",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
+    },
+
+    "DBPassword": {
+      "NoEcho": "true",
+      "Description": "Password for PostgreSQL database access",
+      "Type": "String",
+      "MinLength": "8",
+      "MaxLength": "128",
+      "AllowedPattern": "[a-zA-Z0-9]*",
+      "ConstraintDescription": "must contain only alphanumeric characters."
+    },
+
+    "DBAllocatedStorage": {
+      "Default": "5",
+      "Description": "The size of the database (Gb)",
+      "Type": "Number",
+      "MinValue": "5",
+      "MaxValue": "1024",
+      "ConstraintDescription": "must be between 5 and 1024Gb."
+    },
+
+    "DBInstanceClass": {
+      "Description": "The database instance type",
+      "Type": "String",
+      "Default": "db.t2.micro",
+      "AllowedValues": [
+        "db.t2.micro",
+        "db.t2.small",
+        "db.t2.medium",
+        "db.t2.large",
+        "db.t2.xlarge",
+        "db.t2.2xlarge",
+        "db.m4.large",
+        "db.m4.xlarge",
+        "db.m4.2xlarge",
+        "db.m4.4xlarge",
+        "db.m4.10xlarge",
+        "db.m4.16xlarge",
+        "db.m3.medium",
+        "db.m3.large",
+        "db.m3.xlarge",
+        "db.m3.2xlarge",
+        "db.r4.large",
+        "db.r4.xlarge",
+        "db.r4.2xlarge",
+        "db.r4.4xlarge",
+        "db.r4.8xlarge",
+        "db.r4.16xlarge",
+        "db.x1e.xlarge",
+        "db.x1e.2xlarge",
+        "db.x1e.4xlarge",
+        "db.x1e.8xlarge",
+        "db.x1e.16xlarge",
+        "db.x1e.32xlarge",
+        "db.x1.16xlarge",
+        "db.x1.32xlarge",
+        "db.r3.large",
+        "db.r3.xlarge",
+        "db.r3.2xlarge",
+        "db.r3.4xlarge",
+        "db.r3.8xlarge"
+      ],
+      "ConstraintDescription": "must select a valid database instance type."
+    },
+
+    "MultiAZDatabase": {
+      "Default": "false",
+      "Description": "Create a Multi-AZ PostgreSQL Amazon RDS database instance. Is not included in Free Tier.",
+      "Type": "String",
+      "AllowedValues": ["true", "false"],
+      "ConstraintDescription": "must be either true or false."
+    },
+
+    "WebServerCapacity": {
+      "Default": "1",
+      "Description": "The initial number of WebServer instances",
+      "Type": "Number",
+      "MinValue": "1",
+      "MaxValue": "5",
+      "ConstraintDescription": "must be between 1 and 5 EC2 instances."
+    },
+
+    "InstanceType": {
+      "Description": "WebServer EC2 instance type",
+      "Type": "String",
+      "Default": "t2.micro",
+      "AllowedValues": [
+        "t2.nano",
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large",
+        "t2.xlarge",
+        "t2.2xlarge",
+        "t3.nano",
+        "t3.micro",
+        "t3.small",
+        "t3.medium",
+        "t3.large",
+        "t3.xlarge",
+        "t3.2xlarge",
+        "m4.large",
+        "m4.xlarge",
+        "m4.2xlarge",
+        "m4.4xlarge",
+        "m4.10xlarge",
+        "m4.16xlarge",
+        "m5.large",
+        "m5.xlarge",
+        "m5.2xlarge",
+        "m5.4xlarge",
+        "m5.12xlarge",
+        "m5.24xlarge",
+        "m5d.large",
+        "m5d.xlarge",
+        "m5d.2xlarge",
+        "m5d.4xlarge",
+        "m5d.12xlarge",
+        "m5d.24xlarge",
+        "c4.large",
+        "c4.xlarge",
+        "c4.2xlarge",
+        "c4.4xlarge",
+        "c4.8xlarge",
+        "c5.large",
+        "c5.xlarge",
+        "c5.2xlarge",
+        "c5.4xlarge",
+        "c5.9xlarge",
+        "c5.18xlarge",
+        "c5d.xlarge",
+        "c5d.2xlarge",
+        "c5d.4xlarge",
+        "c5d.9xlarge",
+        "c5d.18xlarge",
+        "r4.large",
+        "r4.xlarge",
+        "r4.2xlarge",
+        "r4.4xlarge",
+        "r4.8xlarge",
+        "r4.16xlarge",
+        "r5.large",
+        "r5.xlarge",
+        "r5.2xlarge",
+        "r5.4xlarge",
+        "r5.12xlarge",
+        "r5.24xlarge",
+        "r5d.large",
+        "r5d.xlarge",
+        "r5d.2xlarge",
+        "r5d.4xlarge",
+        "r5d.12xlarge",
+        "r5d.24xlarge",
+        "x1.16xlarge",
+        "x1.32xlarge",
+        "x1e.xlarge",
+        "x1e.2xlarge",
+        "x1e.4xlarge",
+        "x1e.8xlarge",
+        "x1e.16xlarge",
+        "x1e.32xlarge",
+        "z1d.large",
+        "z1d.xlarge",
+        "z1d.2xlarge",
+        "z1d.3xlarge",
+        "z1d.6xlarge",
+        "z1d.12xlarge",
+        "d2.xlarge",
+        "d2.2xlarge",
+        "d2.4xlarge",
+        "d2.8xlarge",
+        "h1.2xlarge",
+        "h1.4xlarge",
+        "h1.8xlarge",
+        "h1.16xlarge",
+        "i3.large",
+        "i3.xlarge",
+        "i3.2xlarge",
+        "i3.4xlarge",
+        "i3.8xlarge",
+        "i3.16xlarge",
+        "i3.metal"
+      ],
+      "ConstraintDescription": "must be a valid EC2 instance type."
+    },
+
+    "SSHLocation": {
+      "Description": " The IP address range that can be used to SSH to the EC2 instances",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "Default": "0.0.0.0/0",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+    }
+  },
+
+  "Mappings": {
+    "AWSRegionAMI": {
+      "us-east-1": {
+        "AmazonLinux2": "ami-04681a1dbd79675a5",
+        "AmazonLinux": "ami-0ff8a91507f77f867",
+        "Ubuntu1604LTS": "ami-04169656fea786776"
+      },
+      "us-west-2": {
+        "AmazonLinux2": "ami-6cd6f714",
+        "AmazonLinux": "ami-a0cfeed8",
+        "Ubuntu1604LTS": "ami-51537029"
+      },
+      "us-west-1": {
+        "AmazonLinux2": "ami-0782017a917e973e7",
+        "AmazonLinux": "ami-0bdb828fd58c52235",
+        "Ubuntu1604LTS": "ami-059e7901352ebaef8"
+      },
+      "eu-west-1": {
+        "AmazonLinux2": "ami-0bdb1d6c15a40392c",
+        "AmazonLinux": "ami-047bb4163c506cd98",
+        "Ubuntu1604LTS": "ami-0181f8d9b6f098ec4"
+      },
+      "eu-west-2": {
+        "AmazonLinux2": "ami-e1768386",
+        "AmazonLinux": "ami-f976839e",
+        "Ubuntu1604LTS": "ami-c7ab5fa0"
+      },
+      "eu-west-3": {
+        "AmazonLinux2": "ami-06340c8c12baa6a09",
+        "AmazonLinux": "ami-0ebc281c20e89ba4b",
+        "Ubuntu1604LTS": "ami-0370f4064dbc392b9"
+      },
+      "eu-central-1": {
+        "AmazonLinux2": "ami-0f5dbc86dd9cbf7a8",
+        "AmazonLinux": "ami-0233214e13e500f77",
+        "Ubuntu1604LTS": "ami-027583e616ca104df"
+      },
+      "ap-northeast-1": {
+        "AmazonLinux2": "ami-08847abae18baa040",
+        "AmazonLinux": "ami-06cd52961ce9f0d85",
+        "Ubuntu1604LTS": "ami-02115cef40fbb46a4"
+      },
+      "ap-northeast-2": {
+        "AmazonLinux2": "ami-012566705322e9a8e",
+        "AmazonLinux": "ami-0a10b2721688ce9d2",
+        "Ubuntu1604LTS": "ami-00ca7ffe117e2fe91"
+      },
+      "ap-southeast-1": {
+        "AmazonLinux2": "ami-01da99628f381e50a",
+        "AmazonLinux": "ami-08569b978cc4dfa10",
+        "Ubuntu1604LTS": "ami-03221428e6676db69"
+      },
+      "ap-southeast-2": {
+        "AmazonLinux2": "ami-00e17d1165b9dd3ec",
+        "AmazonLinux": "ami-09b42976632b27e9b",
+        "Ubuntu1604LTS": "ami-059b78064586da1b7"
+      },
+      "ap-south-1": {
+        "AmazonLinux2": "ami-00b6a8a2bd28daf19",
+        "AmazonLinux": "ami-0912f71e06545ad88",
+        "Ubuntu1604LTS": "ami-00b7e666605d33085"
+      },
+      "us-east-2": {
+        "AmazonLinux2": "ami-0cf31d971a3ca20d6",
+        "AmazonLinux": "ami-0b59bfac6be064b78",
+        "Ubuntu1604LTS": "ami-0552e3455b9bc8d50"
+      },
+      "ca-central-1": {
+        "AmazonLinux2": "ami-ce1b96aa",
+        "AmazonLinux": "ami-0b18956f",
+        "Ubuntu1604LTS": "ami-9526abf1"
+      },
+      "sa-east-1": {
+        "AmazonLinux2": "ami-0ad7b0031d41ed4b9",
+        "AmazonLinux": "ami-07b14488da8ea02a0",
+        "Ubuntu1604LTS": "ami-08b78b890b5a86161"
+      }
+    }
+  },
+
+  "Resources": {
+    "ApplicationLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Subnets": { "Ref": "Subnets" }
+      }
+    },
+
+    "ALBListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "Type": "forward",
+            "TargetGroupArn": { "Ref": "ALBTargetGroup" }
+          }
+        ],
+        "LoadBalancerArn": { "Ref": "ApplicationLoadBalancer" },
+        "Port": "80",
+        "Protocol": "HTTP"
+      }
+    },
+
+    "ALBTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "HealthCheckIntervalSeconds": 10,
+        "HealthCheckTimeoutSeconds": 5,
+        "HealthyThresholdCount": 2,
+        "Port": 80,
+        "Protocol": "HTTP",
+        "UnhealthyThresholdCount": 5,
+        "VpcId": { "Ref": "VpcId" },
+        "TargetGroupAttributes": [
+          { "Key": "stickiness.enabled", "Value": "true" },
+          { "Key": "stickiness.type", "Value": "lb_cookie" },
+          { "Key": "stickiness.lb_cookie.duration_seconds", "Value": "30" }
+        ]
+      }
+    },
+
+    "WebServerGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "VPCZoneIdentifier": { "Ref": "Subnets" },
+        "LaunchConfigurationName": { "Ref": "LaunchConfig" },
+        "MinSize": "1",
+        "MaxSize": "5",
+        "DesiredCapacity": { "Ref": "WebServerCapacity" },
+        "TargetGroupARNs": [{ "Ref": "ALBTargetGroup" }]
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT10M",
+          "Count": { "Ref": "WebServerCapacity" }
+        }
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "1",
+          "MaxBatchSize": "1",
+          "PauseTime": "PT15M",
+          "WaitOnResourceSignals": "true"
+        }
+      }
+    },
+
+    "LaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Metadata": {
+        "Comment1": "Configure the bootstrap helpers to install docker",
+        "Comment2": "",
+
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "packages": {
+              "yum": {
+                "docker": [],
+                "git": []
+              }
+            },
+
+            "files": {
+              "/etc/cfn/cfn-hup.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[main]\n",
+                      "stack=",
+                      { "Ref": "AWS::StackId" },
+                      "\n",
+                      "region=",
+                      { "Ref": "AWS::Region" },
+                      "\n"
+                    ]
+                  ]
+                },
+                "mode": "000400",
+                "owner": "root",
+                "group": "root"
+              },
+
+              "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "[cfn-auto-reloader-hook]\n",
+                      "triggers=post.update\n",
+                      "path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+                      "action=/opt/aws/bin/cfn-init -v ",
+                      "         --stack ",
+                      { "Ref": "AWS::StackName" },
+                      "         --resource LaunchConfig ",
+                      "         --region ",
+                      { "Ref": "AWS::Region" },
+                      "\n",
+                      "runas=root\n"
+                    ]
+                  ]
+                },
+                "mode": "000400",
+                "owner": "root",
+                "group": "root"
+              }
+            },
+
+            "services": {
+              "sysvinit": {
+                "cfn-hup": {
+                  "enabled": "true",
+                  "ensureRunning": "true",
+                  "files": [
+                    "/etc/cfn/cfn-hup.conf",
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                  ]
+                },
+                "docker": {
+                  "enabled": "true",
+                  "ensureRunning": "true"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "AWSRegionAMI",
+            { "Ref": "AWS::Region" },
+            { "Ref": "EC2OS" }
+          ]
+        },
+        "InstanceType": { "Ref": "InstanceType" },
+        "InstanceMonitoring": { "Ref": "EC2Monitoring" },
+        "SecurityGroups": [{ "Ref": "WebServerSecurityGroup" }],
+        "KeyName": { "Ref": "KeyName" },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "yum update -y aws-cfn-bootstrap\n",
+
+                "# Install the files and packages from the metadata\n",
+                "/opt/aws/bin/cfn-init -v ",
+                "         --stack ",
+                { "Ref": "AWS::StackName" },
+                "         --resource LaunchConfig ",
+                "         --region ",
+                { "Ref": "AWS::Region" },
+                "\n",
+
+                "# Install docker-compose.\n",
+                "sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose\n",
+                "sudo chmod +x /usr/local/bin/docker-compose\n",
+
+                "# Clone the repository to the system\n",
+                "git clone ",
+                { "Ref": "RepositoryURL" },
+                " ~/code",
+                "\n",
+
+                "# Set system variables and build and run the application\n",
+                "nohup bash -c \"export RDS_USER=",
+                { "Ref": "DBUser" },
+                " && export RDS_PASSWRD=",
+                { "Ref": "DBPassword" },
+                " && export RDS_HOST=",
+                { "Fn::GetAtt": ["PostgreSQLDatabase", "Endpoint.Address"] },
+                " && cd ~/code && /usr/local/bin/docker-compose -f docker-compose.yml up\" &\n",
+
+                "# Signal the status from cfn-init\n",
+                "/opt/aws/bin/cfn-signal -e $? ",
+                "         --stack ",
+                { "Ref": "AWS::StackName" },
+                "         --resource WebServerGroup ",
+                "         --region ",
+                { "Ref": "AWS::Region" },
+                "\n"
+              ]
+            ]
+          }
+        }
+      }
+    },
+
+    "WebServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP access via port 80 locked down to the ELB and SSH access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "SourceSecurityGroupId": {
+              "Fn::Select": [
+                0,
+                { "Fn::GetAtt": ["ApplicationLoadBalancer", "SecurityGroups"] }
+              ]
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": { "Ref": "SSHLocation" }
+          }
+        ],
+        "VpcId": { "Ref": "VpcId" }
+      }
+    },
+
+    "DBEC2SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Open database for access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "5432",
+            "ToPort": "5432",
+            "SourceSecurityGroupId": { "Ref": "WebServerSecurityGroup" }
+          }
+        ],
+        "VpcId": { "Ref": "VpcId" }
+      }
+    },
+
+    "PostgreSQLDatabase": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "Engine": "postgres",
+        "DBName": { "Ref": "DBName" },
+        "MultiAZ": { "Ref": "MultiAZDatabase" },
+        "MasterUsername": { "Ref": "DBUser" },
+        "MasterUserPassword": { "Ref": "DBPassword" },
+        "DBInstanceClass": { "Ref": "DBInstanceClass" },
+        "AllocatedStorage": { "Ref": "DBAllocatedStorage" },
+        "StorageType": "gp2",
+        "VPCSecurityGroups": [
+          { "Fn::GetAtt": ["DBEC2SecurityGroup", "GroupId"] }
+        ]
+      }
+    }
+  },
+
+  "Outputs": {
+    "WebsiteURL": {
+      "Description": "URL for newly created stack",
+      "Value": {
+        "Fn::Join": [
+          "",
+          ["http://", { "Fn::GetAtt": ["ApplicationLoadBalancer", "DNSName"] }]
+        ]
+      }
+    }
+  }
+}
