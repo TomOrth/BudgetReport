@@ -1,3 +1,6 @@
+"""
+This module contains the controller for the expense logic
+"""
 import json
 
 from flask import Blueprint, request, current_app, redirect, url_for, jsonify
@@ -11,6 +14,11 @@ expense = Blueprint('expense', __name__, url_prefix='/expense')
 
 @expense.route('/new', methods=['POST'])
 def new():
+    """
+    Route that creates a new Expense
+    :returns: message and status code
+    :rtype: str, int
+    """
     if request.method == 'POST':
         payload = request.json
         expense = None
@@ -36,6 +44,11 @@ def new():
 
 @expense.route('/all')
 def all():
+    """
+    Route to retrieve all the expenses
+    :returns: message and status code
+    :rtype: str, int
+    """
     expense_map = {}
     for e in current_user.expenses:
         if e.budget_id in expense_map.keys():
@@ -47,6 +60,11 @@ def all():
 
 @expense.route('/delete', methods=['POST'])
 def delete():
+    """
+    Route to delete an expense
+    :returns: message and status code
+    :rtype: str, int
+    """
     if request.method == 'POST':
         payload = request.json
         expense = Expense.query.filter_by(description=payload['name']).first()

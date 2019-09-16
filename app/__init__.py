@@ -1,3 +1,6 @@
+"""
+This is the main entry point into the application
+"""
 from flask import Flask, render_template, redirect, url_for
 from flask_login import current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -29,19 +32,31 @@ app.register_blueprint(expense)
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
-    
+
 @app.route("/")
 def home():
-    if current_user.is_authenticated: 
+    """
+    Route that loads the home page
+    :returns: A redirect to the budget report page if the user is logged in or the home page
+    """
+    if current_user.is_authenticated:
         return redirect(url_for('budget.report'))
     return render_template('index.html', loggedin=current_user.is_authenticated, title='Home')
 
 @login_manager.user_loader
 def load_user(user_id):
+    """
+    Loads the currently logged in user
+    :returns: Logged in user
+    :rtype: auth.models.User
+    """
     return User.query.filter_by(id=user_id).first()
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
+    """
+    Route to handle any unauthorized callbacks
+    """
     return redirect(url_for('auth.signup'))
 
 db.create_all()

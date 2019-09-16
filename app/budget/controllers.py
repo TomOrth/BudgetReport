@@ -1,3 +1,6 @@
+"""
+This module contains the controller for the budgets of the application
+"""
 import json
 
 from flask import Blueprint, render_template, request, current_app, redirect, url_for, jsonify
@@ -11,10 +14,19 @@ budget = Blueprint('budget', __name__, url_prefix='/budget')
 @budget.route('/report')
 @login_required
 def report():
+    """
+    Route that renders the budget report page page
+    :returns: A redirect to the budget report page
+    """
     return render_template('budget/report.html', loggedin=current_user.is_authenticated, title='Report')
 
 @budget.route('/new', methods=['POST'])
 def new():
+    """
+    Route to create a new budget
+    :returns: Status message to indicate if the creation was sucessful
+    :rtype: str, int
+    """
     if request.method == 'POST':
         payload = request.json
         budget_exists = Budget.query.filter_by(name=payload['name']).scalar()
@@ -30,11 +42,21 @@ def new():
 
 @budget.route('/all')
 def all():
+    """
+    Route to get all budgets as json
+    :returns: JSON of all the budgets
+    :rtype: str
+    """
     budgets = [b.as_dict() for b in current_user.budgets]
     return jsonify(budgets)
 
 @budget.route('/delete', methods=['POST'])
 def delete():
+    """
+    Route that delets a specific budget from the database
+    :returns: Message with status and status code
+    :rtype: str, int
+    """
     if request.method == 'POST':
         payload = request.json
         budget = Budget.query.filter_by(name=payload['name']).first()
