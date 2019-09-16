@@ -2,14 +2,16 @@ version: "3"
 services:
   app:
     build: .
-    command: python -m flask run --host 0.0.0.0 --port 80
-    ports:
-      - "80:80"
-    volumes:
-      - .:/var/www/budgetreport
+    command: python -m flask run --host 0.0.0.0 --port 5000
     environment:
-      - RDS_USER=${RDS_USER}
-      - RDS_PASSWRD=${RDS_PASSWRD}
-      - RDS_HOST=${RDS_HOST}
       - FLASK_APP=run.py
       - FLASK_ENV=development
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/var/www/budgetreport
+  test:
+    build: .
+    command: python -m unittest discover -v
+    volumes:
+      - .:/var/www/budgetreport

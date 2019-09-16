@@ -2,4 +2,4 @@ sudo: required
 language: python
 services: docker
 cache: pip
-script: sudo -E docker-compose -f docker-compose.test.yml up
+script: sudo -E docker-compose -f docker-compose.yml up
